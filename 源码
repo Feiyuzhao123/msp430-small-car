@@ -1,0 +1,84 @@
+#define CPU_F ((double)8000000)
+#define delay_us(x) __delay_cycles((long)(CPU_F*(double)x/1000000.0))
+#define delay_ms(x) __delay_cycles((long)(CPU_F*(double)x/1000.0))
+#include "io430.h"
+void zhizou()
+{
+  	 P1OUT |= BIT4;                      
+	 P1OUT &=~ BIT5; 
+	 P2OUT |= BIT4; 
+	 P2OUT &=~ BIT5;
+    P3OUT |= BIT7;
+     P8OUT |=BIT2;
+    delay_ms(40);
+    P3OUT &=~ BIT7;
+        P8OUT &=~ BIT2;
+         delay_ms(40);
+         
+}
+//两个使能端均可用
+           void youzhuan()
+           {
+             	 P1OUT |= BIT4;                      
+	 P1OUT &=~ BIT5; 
+	 P2OUT |= BIT4; 
+	 P2OUT &=~ BIT5;
+         P3OUT &=~ BIT7;
+               P8OUT |= BIT2;
+                delay_ms(40);
+                P8OUT &=~ BIT2;
+         delay_ms(40);
+
+           }//设定为右转
+     void zuozhuan()
+           {
+             	 P1OUT |= BIT4;                      
+	 P1OUT &=~ BIT5; 
+	 P2OUT |= BIT4; 
+	 P2OUT &=~ BIT5;
+         P8OUT &=~ BIT2;
+               P3OUT |= BIT7;
+      delay_ms(40);
+      P3OUT &=~ BIT7;
+        delay_ms(40);
+           }//设定为左转
+           //一个间断运动，一个持续运动
+           void stop()
+           {
+             P1OUT=0X00;
+             P2OUT=0x00;
+P3DIR |= BIT7;
+             P4OUT=BIT7;//打开小灯
+           }
+           //全部停止，P1, P2口全部停止
+int main(void) 
+{
+
+	WDTCTL = WDTPW | WDTHOLD;					  //关闭看门狗
+    P1DIR |= BIT4;											
+	P1DIR |= BIT5;
+	 P2DIR |= BIT4;
+	 P2DIR |= BIT5;          //P1.4 1.5 2.4 2.5为输出模式
+	 P1OUT |= BIT4;                      
+	 P1OUT &=~ BIT5; 
+	 P2OUT |= BIT4; 
+	 P2OUT &=~ BIT5; 
+         P3DIR |= BIT7;
+         P8DIR |= BIT2;     
+          P6SEL = 0x00;
+   P6DIR = 0x00;
+
+ while (1)
+  {
+        switch(P6IN&0x07)
+        {
+          case 0x01:youzhuan();break;
+            case 0x02:zhizou();break;
+              case 0x03:youzhuan();break;
+              case 0x04:zuozhuan();break;
+              case 0x06:zuozhuan();break;
+        case  0x00: stop();break;
+        case  0x07: stop();break;
+              default:zhizou(); break;
+}
+  }
